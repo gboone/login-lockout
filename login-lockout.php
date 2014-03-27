@@ -37,7 +37,7 @@ class LoginLockout {
 	public function login_transient($user) {
 		$user_id = get_user_by( 'slug', $user )->ID;
 		$key = 'user_' . $user_id;
-		$t = get_transient( 'user_' . $user_id );
+		$t = get_transient( $key );
 		if ( intval($t) < 3 ) {
 			$t = intval($t);
 			$t++;
@@ -48,6 +48,7 @@ class LoginLockout {
 		} else {
 			set_transient( 'user_'. $user_id, '0', $expiration = 900 );
 		}
+		return $t;
 	}
 }
 
