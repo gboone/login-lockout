@@ -52,7 +52,8 @@ class LoginLockout {
 			$t++;
 			set_transient($key, strval($t), 900);
 		} elseif ( intval($t) >=3 ) {
-			wp_die("{$key} have attempted to login {$t} times and are now locked out. Please use the reset password feature to unlock your account.");
+			wp_die("You have attempted to login {$t} times and are now locked out. 
+				Please use the reset password feature to unlock your account.");
 		} else {
 			set_transient( 'user_'. $user_id, '0', $expiration = 900 );
 		}
