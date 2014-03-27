@@ -2,37 +2,28 @@
 /*
 Plugin Name: WordPress Login Lockout
 Plugin URI: http://github.com/gboone
-Description: This plugin contains classes that help developers turn WordPress into a full CMS. 
+Description: A plugin to limit login attempts at the user level
 
-The plugin includes the useful `build_cfpb_post_type()` and `build_cfpb_taxonomy()` 
-functions. The first allows you to create a new custom post type by passing the 
-following parameters: $name (the singular name), $plural (the, uh, plural version of
-$name) and $slug. The second allows you to build a new custom taxonomy with a few 
-simple parameters.
+Other plugins have attempted to lock out users based on a combination of user name 
+and IP address. This plugin attempts to lock out users based solely on how many 
+times a user attempts to log in to the system.
 
-Version: 1.3.2
-Author: Greg Boone, Aman Kaur, Matthew Duran
+Version: 1.0
+Author: Greg Boone
 Author URI: http://github.cfpb.gov/gboone
 License: Public Domain work of the Federal Government
 
-Code complexity: 5, OK. (pdepend --summary-xml=QA/scotlandphp-summary.xml scotland.php)
-Passes phpcs --standard=WordPress
 */
 namespace gboone;
 class LoginLockout {
-	public function __construct() {
-
-	}
 
 	public function build() {
 		add_action('wp_authenticate', array($this, 'transient_check'));
 		add_action('password_reset', array( $this, 'flush_transient'), 10, 2);
 	}
 
-	public function transient_check($key) {
+	public function transient_check() {
 		global $interim_login;
-		$user = get_user_by( 'slug', 'gboone' );
-		$t = get_transient( $key );
 		if ( $interim_login == false ) {
 			$this->login_transient($_POST['log']);
 		}
