@@ -4,9 +4,9 @@ Plugin Name: WordPress Login Lockout
 Plugin URI: http://github.com/gboone
 Description: A plugin to limit login attempts at the user level
 
-Other plugins have attempted to lock out users based on a combination of user name 
-and IP address. This plugin attempts to lock out users based solely on how many 
-times a user attempts to log in to the system.
+Other plugins have attempted to lock out users based on a combination of user 
+name and IP address. This plugin attempts to lock out users based solely on how 
+many times a user attempts to log in to the system.
 
 Version: 1.0
 Author: Greg Boone
@@ -18,11 +18,11 @@ namespace gboone;
 class LoginLockout {
 
 	public function build() {
-		add_action('wp_authenticate', array($this, 'transient_check'));
+		add_action('wp_authenticate', array($this, 'login_check'));
 		add_action('password_reset', array( $this, 'flush_transient'), 10, 2);
 	}
 
-	public function transient_check() {
+	public function login_check() {
 		global $interim_login;
 		if ( $interim_login == false ) {
 			$this->login_transient($_POST['log']);
