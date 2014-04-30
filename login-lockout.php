@@ -16,7 +16,15 @@ License: Public Domain work of the Federal Government
 */
 namespace gboone;
 class LoginLockout {
+	public $attempts;
 
+	public function __construct() {
+		if ( getenv('MAX_ATTEMPTS') ) {
+			$this->attempts = getenv('MAX_ATTEMPTS');
+		} else {
+			$this->attempts = 5;
+		}
+	}
 	public function build() {
 		add_action('wp_authenticate', array($this, 'login_check'));
 		add_action('password_reset', array( $this, 'flush_transient'), 10, 2);
@@ -24,7 +32,7 @@ class LoginLockout {
 
 	public function login_check() {
 		global $interim_login;
-		if ( $interim_login == false ) {
+		if ( $interim_login == false && isset($_POST['log']) ) {
 			$this->login_transient($_POST['log']);
 		}
 	}
@@ -38,11 +46,11 @@ class LoginLockout {
 		$user_id = get_user_by( 'slug', $user )->ID;
 		$key = 'user_' . $user_id;
 		$t = get_transient( $key );
-		if ( intval($t) < 3 ) {
+		if ( intval($t) < $this->attempts ) {
 			$t = intval($t);
 			$t++;
 			set_transient($key, strval($t), 900);
-		} elseif ( intval($t) >=3 ) {
+		} elseif ( intval($t) >= $this->attempts ) {
 			wp_die("You have attempted to login {$t} times and are now locked out. 
 				Please use the reset password feature to unlock your account.");
 		} else {
